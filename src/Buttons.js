@@ -6,7 +6,8 @@ function Buttons() {
     const hasEqual=/=/;
     const startWithNull=/^0/;
     const endWithOperator=/[-|+|*|/]$/;
-    const endWithDecimal=/[.]$/
+    const endWithMinus=/-$/;
+    const endWithDecimal=/[.]$/;
     const [oldNumber,setOldNumber]=React.useState('')
     const [newNumber,setNewNumber]=React.useState('')
     const [isNumberDisabled,setIsNumberDisabled]=React.useState(false)
@@ -68,8 +69,13 @@ function Buttons() {
                 setOldNumber(prevState => prevState.slice(0,-1) + input)
                 setNewNumber(input)
             } else {
-                setOldNumber(prevState => prevState + input)
-                setNewNumber(input)
+                if(endWithMinus.test(oldNumber)){
+                    setOldNumber(prevState => prevState.slice(0,-1) + '+')
+                    setNewNumber('+')
+                } else{
+                    setOldNumber(prevState => prevState + input)
+                    setNewNumber(input)
+                }  
             }
         }else if(hasEqual.test(oldNumber)){
             setOldNumber(newNumber + input)
@@ -100,6 +106,8 @@ function Buttons() {
         if(endWithOperator.test(oldNumber)){
             setOldNumber('NaN')
             setNewNumber('NaN')
+            setIsNumberDisabled(true)
+            setIsOPDisabled(true)
         } else if((oldNumber + '=' + Function(`'use strict';return (${input})`)()).length>=35) {
             setOldNumber('ERROR: DIGIT LIMIT')
             setNewNumber(Function(`'use strict';return (${input})`)())
